@@ -1,0 +1,28 @@
+apiVersion: "nuclio.io/v1"
+kind: Function
+metadata:
+  name: changehumidity
+  namespace: nuclio
+spec:
+  handler: "main:handler"
+  description: "Function called when a new message is arrived on the iot/alerts queue."
+  runtime: nodejs
+  image: "nuclio/processor-changehumidity:latest"
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPU: 75
+  triggers:
+    myMqttTrigger:
+      kind: "mqtt"
+      url: "guest:guest@192.168.1.4:1883"
+      attributes:
+          subscriptions:
+          - topic: iot/alerts
+            qos: 0
+  build:
+    functionSourceCode: dmFyIG1xdHQgPSByZXF1aXJlKCJtcXR0Iik7CnZhciB1cmwgPSByZXF1aXJlKCJ1cmwiKTsKdmFyIHJlZGlzID0gcmVxdWlyZSgicmVkaXMiKTsKCnZhciBtcXR0X3VybCA9IHVybC5wYXJzZSgKICBwcm9jZXNzLmVudi5DTE9VREFNUVBfTVFUVF9VUkwgfHwKICAibXF0dDovL2d1ZXN0Omd1ZXN0QDE5Mi4xNjguMS40OjE4ODMiCik7CnZhciBhdXRoID0gKG1xdHRfdXJsLmF1dGggfHwgIjoiKS5zcGxpdCgiOiIpOwp2YXIgdXJsID0gIm1xdHQ6Ly8iICsgbXF0dF91cmwuaG9zdDsKdmFyIG9wdGlvbnMgPSB7CnBvcnQ6IG1xdHRfdXJsLnBvcnQsCmNsaWVudElkOiAibXF0dGpzXyIgKyBNYXRoLnJhbmRvbSgpLnRvU3RyaW5nKDE2KS5zdWJzdHIoMiwgOCksCnVzZXJuYW1lOiBhdXRoWzBdLApwYXNzd29yZDogYXV0aFsxXSwKfTsKCmZ1bmN0aW9uIGJpbjJzdHJpbmcoYXJyYXkpIHsKdmFyIHJlc3VsdCA9ICIiOwpmb3IgKHZhciBpID0gMDsgaSA8IGFycmF5Lmxlbmd0aDsgKytpKSB7CiAgcmVzdWx0ICs9IFN0cmluZy5mcm9tQ2hhckNvZGUoYXJyYXlbaV0pOwp9CnJldHVybiByZXN1bHQ7Cn0KICAKICBleHBvcnRzLmhhbmRsZXIgPSBmdW5jdGlvbiAoY29udGV4dCwgZXZlbnQpIHsKICAgIGNvbnN0IGNsaWVudFJlZGlzID0gcmVkaXMuY3JlYXRlQ2xpZW50KHtob3N0OiAiMTkyLjE2OC4xLjQifSk7CiAgICB2YXIgX2V2ZW50ID0gSlNPTi5wYXJzZShKU09OLnN0cmluZ2lmeShldmVudCkpOwogICAgdmFyIF9kYXRhID0gYmluMnN0cmluZyhfZXZlbnQuYm9keS5kYXRhKTsKICAgIHZhciBtc2cgPSAiRGVodW1pZGlmaWVyIGFjdGl2YXRlZCAhISBIdW1pZGl0eSB3YXMgIiArIF9kYXRhOwogICAgCiAgICB2YXIgY2xpZW50ID0gbXF0dC5jb25uZWN0KHVybCwgb3B0aW9ucyk7CiAgICBjbGllbnRSZWRpcy5zZXQoIm9yZGVyIiwgImRlc2NlbmRpbmciKTsKCiAgICBjbGllbnQub24oJ2Nvbm5lY3QnLCBmdW5jdGlvbigpIHsKICAgICAgY2xpZW50LnB1Ymxpc2goJ2lvdC9sb2dzJywgbXNnLCBmdW5jdGlvbigpIHsKICAgICAgICAgICAgICBjbGllbnQuZW5kKCk7IAogICAgICAgICAgICAgIGNvbnRleHQuY2FsbGJhY2soIkh1bWlkaXR5IHdhczogIiArIF9kYXRhKTsgICAgICAgIAogICAgICB9KTsKICAgIH0pOwoKICB9Ow==
+    commands:
+      - 'npm install mqtt'
+      - 'npm install redis'
+    codeEntryType: sourceCode
+  platform: {}
