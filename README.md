@@ -9,7 +9,7 @@
 ## Introduction
 This is a project for the exam of Serverless Computing for IoT.
 
-The idea is to **simulate an humidity sensor** placed in a museum to manage the humidity rate in order to **preserve the works of art**.  
+The idea is to **simulate a humidity sensor** placed in a museum to manage the humidity rate in order to **preserve the works of art**.  
 The humidity rate should be **between 30% and 50%** so when it exceeds 50% a **dehumidifier is activated** and when it arrives at 30% the **dehumidifier is deactivated**.  
 
 All the values are **simulated** because I am not in possession of any Iot devices.
@@ -21,15 +21,15 @@ The data are stored in **Redis**, an open source in-memory data structure store,
 - **order**: "ascending" or "descending" indicates if the humidity value has to increase or decrease
 
 As said the humidity rate should be **between 30% and 50%** so the ***'sendhumidity'*** function retrieves the humidity value from Redis and checks:
-- if order is "ascending" increases the humidity value of 2 (+2)
-- if order is "descending" decreases the humidity value of 2 (-2)
-- if humidity value is <= 30 sets the order "ascending"
+- if order is "ascending" it increases the humidity value of 2 (+2)
+- if order is "descending" it decreases the humidity value of 2 (-2)
+- if humidity value is <= 30 it sets the order "ascending"
 
 And then the humidity value is published every 5 seconds in the queue ***'iot/sensors/humidity'*** of **RabbitMQ**.  
 
 When a value is published in this queue, the function ***'consumehumidity'*** on Nuclio is triggered, which processes this value. This function publishes a new message in the queue ***'iot/logs'*** (also a message warning the dehumidifier is deactivated if the humidity value is <= 30) and checks if the humidity value is >= 50 publishes it in the queue ***'iot/alerts'***.
 
-When a value is published in the ***'iot/alerts'*** queue, the function ***'changehumidity'*** on Nuclio is triggered, sets the value order "descending" in Redis and publishes a message in the queue ***'iot/logs'*** warning the dehumidifier is activated so the humidity value should decrease.
+When a value is published in the ***'iot/alerts'*** queue, the function ***'changehumidity'*** on Nuclio is triggered, sets the value order "descending" in Redis and publishes a message in the queue ***'iot/logs'*** warning that the dehumidifier is activated so the humidity value should decrease.
 
 <p align="center">
 <img src="architecture.PNG" alt="drawing"/>
