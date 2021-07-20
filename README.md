@@ -25,13 +25,24 @@ As said the humidity rate should be **between 30% and 50%** so the ***'sendhumid
 - if order is "descending" decreases the humidity value of 2 (-2)
 - if humidity value is <= 30 sets the order "ascending"
 
-And then the humidity value is published every 10 seconds in the queue ***'iot/sensors/humidity'*** of **RabbitMQ**.  
+And then the humidity value is published every 5 seconds in the queue ***'iot/sensors/humidity'*** of **RabbitMQ**.  
 
 When a value is published in this queue, the function ***'consumehumidity'*** on Nuclio is triggered, which processes this value. This function publishes a new message in the queue ***'iot/logs'*** (also a message warning the dehumidifier is deactivated if the humidity value is <= 30) and checks if the humidity value is >= 50 publishes it in the queue ***'iot/alerts'***.
 
-When a value is published in the 'iot/alerts' queue, the function ***'changehumidity'*** on Nuclio is triggered, sets the value order "descending" in Redis and publishes a message in the queue ***'iot/logs'*** warning the dehumidifier is activated so the humidity value should decrease.
+When a value is published in the ***'iot/alerts'*** queue, the function ***'changehumidity'*** on Nuclio is triggered, sets the value order "descending" in Redis and publishes a message in the queue ***'iot/logs'*** warning the dehumidifier is activated so the humidity value should decrease.
+
+<p align="center">
+<img src="architecture.PNG" alt="drawing"/>
+</p>
 
 ## Project Structure
+  
+- yaml_functions/
+  - _**sendhumidity.yaml**_: takes care of sending the humidity value to the queue **iot/sensors/humidity**
+  - _**consumehumidity.yaml**_: takes care of processing received values and sending them to the queue **iot/logs** or **iot/alerts** or both
+  - _**changehumidity.yaml**_: takes care of processing received values and sending a warn message to the queue **iot/logs** 
+- _**logger.js**_: takes care of printing the humidity rate and if the dehumidifier is activated or deactivated
+
 
 ## Getting Started
 > Museum requires [Node.js](https://nodejs.org/en/) and [Docker](https://www.docker.com/products/docker-desktop) to run.
